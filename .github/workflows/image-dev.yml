@@ -26,7 +26,7 @@ jobs:
       - name: build the image
         uses: docker/build-push-action@v6
         with:
-          context: 9.0
+          context: "{{defaultContext}}:9.0"
           push: true
           tags: mhzawadi/docker-unifi-rpi:${{ steps.prepare.outputs.version }}
           file: Dockerfile
