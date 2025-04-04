@@ -3,7 +3,6 @@
 # hadolint global ignore=DL3003
 FROM ubuntu:noble AS tini
 ENV TINI_VERSION=v0.19.0
-ENV TARGETARCH=$(dpkg --print-architecture)
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV DEBIAN_FRONTEND=noninteractive
@@ -23,6 +22,7 @@ RUN set -eux; \
 
 RUN set -eux; \
       \
+      export TARGETARCH=$(dpkg --print-architecture); \
       mkdir -p /tmp/build; \
 	    cd /tmp/build; \
       \
@@ -64,8 +64,9 @@ RUN set -eux; \
 # Adapted from: https://get.glennr.nl/unifi/install/unifi-8.1.127.sh
 RUN set -eux; \
       \
+      export TARGETARCH=$(dpkg --print-architecture); \
       libssl_temp="$(mktemp --tmpdir=/tmp libssl1.1.1_XXXXX.deb)"; \
-      case "$(uname -m)" in \
+      case "${TARGETARCH}" in \
         arm64) \
           wget -qO "$libssl_temp" 'http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_arm64.deb'; \
           ;; \
