@@ -25,8 +25,8 @@ RUN set -eux; \
       mkdir -p /tmp/build; \
 	    cd /tmp/build; \
       \
-      wget --progress=dot:giga -O tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-$(uname -m); \
-      wget --progress=dot:giga -O tini.asc https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-$(uname -m).asc; \
+      wget --progress=dot:giga -O tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-$(uname -m| sed 's/aarch64/arm64/'); \
+      wget --progress=dot:giga -O tini.asc https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-$(uname -m| sed 's/aarch64/arm64/').asc; \
       gpg --batch --keyserver  keyserver.ubuntu.com --recv-keys 595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7; \
       gpg --batch --verify tini.asc tini; \
       cp tini /sbin/; \
@@ -72,7 +72,7 @@ RUN set -eux; \
           wget -qO "$libssl_temp" 'http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb'; \
           ;; \
         *) \
-          echo "Unsupported architecture: $(uname -m)"; \
+          echo "Unsupported architecture: $(uname -m| sed 's/aarch64/arm64/')"; \
           exit 1; \
           ;; \
       esac; \
@@ -82,7 +82,7 @@ RUN set -eux; \
       curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | \
       gpg -o /usr/share/keyrings/mongodb-server-4.4.gpg \
       --dearmor ; \
-      echo "deb [ arch=$(uname -m) signed-by=/usr/share/keyrings/mongodb-server-4.4.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list; \
+      echo "deb [ arch=$(uname -m| sed 's/aarch64/arm64/') signed-by=/usr/share/keyrings/mongodb-server-4.4.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list; \
       apt-get update; \
       apt-get -y --no-install-recommends -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install \
         mongodb-org=4.4.18 \
