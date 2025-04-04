@@ -2,8 +2,8 @@ name: build our image for dev
 
 on:
   push:
-    branches:
-      - '[0-9].[0-9]*'
+    branches-ignore:
+      - 'main'
 
 jobs:
   build:
@@ -26,7 +26,8 @@ jobs:
       - name: build the image
         uses: docker/build-push-action@v6
         with:
+          context: 9.0
           push: true
-          tags: mhzawadi/foxess-mqtt:dev-php-${{ steps.prepare.outputs.version }}
+          tags: mhzawadi/docker-unifi-rpi:${{ steps.prepare.outputs.version }}
           file: Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
