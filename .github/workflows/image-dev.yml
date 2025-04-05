@@ -1,0 +1,33 @@
+name: build our image for dev
+
+on:
+  push:
+    branches-ignore:
+      - 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Prepare
+        id: prepare
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+      - name: login to docker hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: build the image
+        uses: docker/build-push-action@v6
+        with:
+          context: "{{defaultContext}}:9.0"
+          push: true
+          tags: mhzawadi/docker-unifi-rpi:${{ steps.prepare.outputs.version }}
+          file: Dockerfile
+          platforms: linux/amd64,linux/arm64
